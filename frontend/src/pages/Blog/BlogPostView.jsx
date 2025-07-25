@@ -1,0 +1,261 @@
+import React, { useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { UserContex } from '../../context/userContext';
+import { useParams } from 'react-router-dom';
+import axiosInstance from '../../utils/axiosInstance';
+import { API_PATHS } from '../../utils/apiPaths';
+import BlogLayouts from '../../components/Layouts/BlogLayouts/BlogLayout';
+import moment from 'moment';
+import { LuDot, LuSparkles } from 'react-icons/lu';
+import TrendingPostsSection from './components/TrendingPostsSection';
+import MarkdownContent from './components/MarkdownContent';
+import SharePost from './components/SharePost';
+import { sanitizeMarkdown } from '../../utils/helper';
+import CommentReplyInput from '../../components/Inputs/CommentReplyInput';
+import CommentInfoCard from './components/CommentInfoCard';
+
+
+export default function BlogPostView() {
+
+  const {slug}= useParams();
+  const navigate = useNavigate();
+
+  const [blogPostData, setBlogPostData] = useState(null);
+  const [comments, setComments]= useState(null);
+
+  const {user, setOpenAuthForm} = useContext(UserContex);
+
+  const [replyText, setReplyText]= useState("");
+  const [showReplyForm, setShowReplyForm] = useState(false);
+
+  const [openSummarizeDrawer, setOpenSummarizeDrawer] = useState(false);
+  const [summaryContent, setSummaryContent] = useState("");
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+
+  const fetchCommentsByPostId = async (postId) => {
+  if (!postId) return;
+
+  try {
+    const response = await axiosInstance.get(
+      API_PATHS.COMMENTS.GET_ALL_BY_POST(postId)
+    );
+
+    if (response.data) {
+      setComments(response.data);
+    }
+  } catch (error) {
+    console.error("Error fetching comments", error);
+  }
+};
+
+
+  //Get Post Data By slug
+  const fetchPostDetailsBySlug = async ()=>{
+    try{
+      const response = await axiosInstance.get(
+        API_PATHS.POSTS.GET_BY_SLUG(slug)
+      );
+
+      if(response.data){
+        const data = response.data;
+        setBlogPostData(data)
+        fetchCommentsByPostId(data._id);
+        incrementViews(data._id)
+      }
+    }catch(error){
+      console.error("Error", error)
+    }
+  };
+
+  //Get Comment by Post ID
+  const fetchCommentByPostSummary = async ()=>{
+    try{
+      const response = await axiosInstance.get(
+        API_PATHS.COMMENTS.GET_ALL_BY_POST(postId)
+      );
+
+      if(response.data){
+        const data = response.data;
+        setComments(data)
+      }
+    }catch(error){
+      console.error("Error",error)
+    }
+  };
+
+  //Generate Blog Post Summary
+  const generateBlogPostSummary = async()=>{
+    
+  };
+
+  //Increment views
+  const incrementViews = async (postId)=>{
+    if(!postId) return;
+
+    try{
+      const response = await axiosInstance.post(
+        API_PATHS.POSTS.INCREMENT_VIEW(postId)
+      );
+    }catch(error){
+      console.error("Error",error)
+    }
+  };
+
+  //Handles canceling a reply
+  const handleCancelReply = ()=>{
+    setReplyText("");
+    setShowReplyForm(false);
+  };
+
+  //Add Reply
+  const handleAddReply = async ()=>{
+
+  }
+
+  useEffect(()=>{
+    fetchPostDetailsBySlug();
+    return()=>{};
+  },[slug]);
+
+  return (
+    <BlogLayouts>
+      {blogPostData && (
+        <>
+        <title>{blogPostData.title}</title>
+
+        <meta name="description" content={blogPostData.title}/>
+        <meta property='og:title' content={blogPostData.title}/>
+        <meta property='og:image' content={blogPostData.coverImageUrl}/>
+        <meta property='og:type' content='article'/>
+
+        <div className='grid grid-cols-12 gap-8 relative'>
+          <div className='col-span-12 md:col-span-8 relative'>
+            <h1 className='text-lg md:text-2xl font-bold mb-2 line-clamp-3'>
+              {blogPostData.title}
+            </h1>
+
+            <div className='flex items-center gap-1 flex-wrap mt-3 mb-5'>
+              <span className='text-[13px] text-gray-500 font-medium'>
+                {moment(blogPostData.updatedAt || "").format("Do MMM YYYY")}
+              </span>
+
+              <LuDot className="text-xl text-gray-400"/>
+
+              <div className='flex items-center flex-wrap gap-2'>
+                {blogPostData.tags.slice(0,3).map((tag, index)=> (
+                  <button
+                  key={index}
+                  className='bg-sky-200/50 text-sky-800/80 text-xs font-medium px-3 py-0.5 rounded-full text-nowrap cursor-pointer'
+                  onClick={(e)=>{
+                    e.stopPropagation();
+                    navigate(`/tag/${tag}`);
+                  }}
+                  >
+                    #{tag}
+                  </button>
+                ))}
+              </div>
+
+              <LuDot className='text-xl text-gray-400'/>
+
+              <button 
+              className='flex items-center gap-2 bg-linear-to-r from-sky-500 to-cyan-400 text-xs text-white font-medium px-3 py-0.5 rounded-full text-nowrap cursor-pointer hover:scale-[1.02] transition-all my-1'
+              onClick={generateBlogPostSummary}
+              >
+                <LuSparkles/> Summarixe Post
+              </button>
+            </div>
+
+            <img 
+            src={blogPostData.coverImageUrl || ""}
+            alt={blogPostData.title}
+            className='w-full h-96 object-cover mb-6 rounded-lg'
+            />
+
+            <div>
+              <MarkdownContent
+              content = {sanitizeMarkdown(blogPostData?.content || "")}
+              />
+
+              <SharePost title={blogPostData.title}/>
+
+              <div className='bg-gray-50 p-4 rounded-lg'>
+                <div className='flex items-center justify-between mb-4'>
+                  <h4 className='text-lg font-semibold'>
+                    Comments
+                  </h4>
+
+                  <button 
+                  className='flex items-center justify-center gap-3 bg-linear-to-r from-sky-500 to bg-cyan-400 text-xs font-semibold text-white px-5 py-2 rounded-full hover:bg-black hover:text-white cursor-pointer'
+                  onClick={()=>{
+                    if(!user){
+                      setOpenAuthForm(true);
+                      return;
+                    }
+                    setShowReplyForm(true);
+                  }}
+                  >
+                    Add Comment
+                  </button>
+                </div>
+
+                {showReplyForm && (
+                  <div className='bg-white pt-1 pb-5 pr-8 rounded-lg mb-8'>
+                    <CommentReplyInput
+                    user={user}
+                    authorName={user.name}
+                    content={""}
+                    replyText={replyText}
+                    setReplyText={setReplyText}
+                    handleAddReply={handleAddReply}
+                    handleCancelReply={handleCancelReply}
+                    disableAutoGen
+                      type="new"
+                      />
+                    
+                  </div>
+                )}
+
+                {comments?.length > 0 && 
+                comments.map((comment)=>(
+                  <CommentInfoCard
+                  key={comment._id}
+                  commentId={comment._id || null}
+                  authorName={comment.author.name}
+                  authorPhoto={comment.author.profileImageUrl}
+                  content={comment.content}
+                  updatedOn={
+                    comment.updatedAt
+                    ? moment(comment.updatedAt).format("Do MMM YYYY")
+                    :"-"
+                  }
+                  post={comment.post}
+                  replies={comment.replies || []}
+                  getAllComments={()=>
+                    fetchCommentsByPostId(blogPostData._id)
+                  }
+                  onDelete={(commentId)=>
+                    setOpenDeleteAlert({
+                      open: true,
+                      data: commentId || comment._id,
+                    })
+                  }
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className='col-span-12 md:col-span-4'>
+            <TrendingPostsSection/>
+          </div>
+        </div>
+        </>
+      )}
+    </BlogLayouts>
+  )
+}
+ 
