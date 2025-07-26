@@ -6,13 +6,17 @@ import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import BlogLayouts from '../../components/Layouts/BlogLayouts/BlogLayout';
 import moment from 'moment';
-import { LuDot, LuSparkles } from 'react-icons/lu';
+import { LuCircleAlert, LuDot, LuSparkles } from 'react-icons/lu';
 import TrendingPostsSection from './components/TrendingPostsSection';
 import MarkdownContent from './components/MarkdownContent';
 import SharePost from './components/SharePost';
 import { sanitizeMarkdown } from '../../utils/helper';
 import CommentReplyInput from '../../components/Inputs/CommentReplyInput';
 import CommentInfoCard from './components/CommentInfoCard';
+import SkeletonLoader from '../../components/Loader/SkeletonLoader';
+import Drawer from './components/Drawer';
+import LikeCommentButton from './components/LikeCommentButton ';
+import toast from 'react-hot-toast';
 
 
 export default function BlogPostView() {
@@ -88,7 +92,29 @@ export default function BlogPostView() {
 
   //Generate Blog Post Summary
   const generateBlogPostSummary = async()=>{
-    
+    try{
+      setErrorMsg("");
+        setSummaryContent(null);
+
+        setIsLoading(true);
+        setOpenSummarizeDrawer(true);
+
+        const response = await axiosInstance.post(
+          API_PATHS.AI.GENERATE_POST_SUMMARY,
+          {
+            content: blogPostData.content || "",
+          }
+      );
+      if(response.data){
+        setSummaryContent(response.data);
+      }
+    }catch(error){
+      setSummaryContent(null);
+      setErrorMsg("Failed to generate summary, Try again later");
+      console.error("Error:", error);
+    }finally{
+      setIsLoading(false);
+    }
   };
 
   //Increment views
@@ -112,12 +138,29 @@ export default function BlogPostView() {
 
   //Add Reply
   const handleAddReply = async ()=>{
+    try{
+      const response = await axiosInstance.post(
+        API_PATHS.COMMENTS.ADD(blogPostData._id),
+        {
+          content:replyText,
+          parentComment:"",
+        }
+      );
+
+      toast.success("Reply added successfully");
+
+      setReplyText("");
+      setShowReplyForm(false)
+      fetchCommentsByPostId(blogPostData._id);
+    }catch(error){
+      console.error("Error adding reply:", error);
+    }
 
   }
 
   useEffect(()=>{
     fetchPostDetailsBySlug();
-    return()=>{};
+    // return()=>{};
   },[slug]);
 
   return (
@@ -189,17 +232,18 @@ export default function BlogPostView() {
                   </h4>
 
                   <button 
-                  className='flex items-center justify-center gap-3 bg-linear-to-r from-sky-500 to bg-cyan-400 text-xs font-semibold text-white px-5 py-2 rounded-full hover:bg-black hover:text-white cursor-pointer'
-                  onClick={()=>{
-                    if(!user){
+                  className="flex items-center justify-center gap-3 bg-linear-to-r from-sky-500 to-cyan-400 text-xs font-semibold text-white px-5 py-2 rounded-full hover:bg-black hover:text-white cursor-pointer"
+                  onClick={() => {
+                    if (!user || !user.name) { // safer check
                       setOpenAuthForm(true);
                       return;
                     }
-                    setShowReplyForm(true);
+                    setShowReplyForm(prev => true);
                   }}
-                  >
-                    Add Comment
-                  </button>
+                >
+                  Add Comment
+                </button>
+
                 </div>
 
                 {showReplyForm && (
@@ -247,12 +291,35 @@ export default function BlogPostView() {
                 ))}
               </div>
             </div>
+
+            <LikeCommentButton 
+            postId={blogPostData._id || ""}
+            likes={blogPostData.likes || 0}
+            comments={comments?.length || 0}
+            />
+
           </div>
 
           <div className='col-span-12 md:col-span-4'>
             <TrendingPostsSection/>
           </div>
         </div>
+
+        <Drawer
+        isOpen={openSummarizeDrawer}
+        onClose={()=> setOpenSummarizeDrawer(false)}
+        title={!isLoading && summaryContent?.title}
+        >
+          {errorMsg && (
+            <p className='flex gap-2 text-sm text-amber-600 font-medium'>
+              <LuCircleAlert className='mt-1'/> {errorMsg}
+            </p>
+          )}
+          {isLoading && <SkeletonLoader/>}
+          {!isLoading && summaryContent && (
+            <MarkdownContent content={summaryContent?.summary || ""}/>
+          )}
+        </Drawer>
         </>
       )}
     </BlogLayouts>

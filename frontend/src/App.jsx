@@ -12,6 +12,7 @@ import BlogPosts from "./pages/Admin/BlogPost";
 import BlogPostEditor from "./pages/Admin/BlogPostEditor";
 import Comments from "./pages/Admin/Comments";
 import UserProvider from './context/userContext';
+// import UserBlogPost from "./pages/Blog/UserBlogPost"
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           <Route path='/:slug' element={<BlogPostView/>}/>
           <Route path="/tag/:tagName" element={<PostByTags/>}/>
           <Route path="/search" element={<SearchPost/>}/>
+          {/* <Route path='/user/posts' element={<UserBlogPost/>}/> */}
           
           {/* Admin Routes */}
         <Route element={<PrivateRoute allowedRoles={["admin"]}/>}>

@@ -157,19 +157,20 @@ try{
 //@desc Get post by tag
 //@route GET /api/posts/tag/:tag
 //@access Public
-const getPostByTag = async (req,res)=>{
-try{
-    const posts =await BlogPost.find({
-        tags: req.params.tag,
-        isDraft: false,
+const getPostByTag = async (req, res) => {
+  try {
+    const tag = req.params.tag;
+    const posts = await BlogPost.find({
+      tags: { $regex: new RegExp(`^${tag}$`, "i") },
+      isDraft: false,
     }).populate("author", "name profileImageUrl");
+
     res.json(posts);
-    }catch(err){
-        res
-        .status(500)
-        .json({message: "Server Error", error: err.message})
-    }
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
 };
+
 
 
 //@desc Search posts by title or content

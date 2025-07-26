@@ -2,13 +2,13 @@ import React, { useState } from 'react'
 import axiosInstance from '../../utils/axiosInstance';
 import { API_PATHS } from '../../utils/apiPaths';
 import input from './input';
-import { LuLoaderCircle, LuReply, LuWandSparkles } from 'react-icons/lu';
+import { LuLoaderCircle, LuReply, LuSend, LuWandSparkles } from 'react-icons/lu';
 
 export default function CommentReplyInput({user, authorName, content, replyText, setReplyText, handleAddReply,handleCancelReply, disableAutoGen, type='reply'}) {
     const [loading, setLoading]= useState(false);
 
     //Generate Reply Using AI
-    const generateRely = async ()=>{
+    const generateReply = async ()=>{
         setLoading(true);
 
         try{
@@ -19,10 +19,10 @@ export default function CommentReplyInput({user, authorName, content, replyText,
                     content,
                 }
             );
-            const generateRely = aiResponse.data;
+            const generateReply = aiResponse.data;
 
-            if(generateRely?.length > 0){
-                setReplyText(generateRely)
+            if(generateReply?.length > 0){
+                setReplyText(generateReply)
             }
         }catch (error){
             console.log("Something wwent wrong. Please try again.", error)
@@ -67,20 +67,30 @@ export default function CommentReplyInput({user, authorName, content, replyText,
                     </button>
                 </div>
             </div>
-            {!disableAutoGen && (
+            {/* {!disableAutoGen && ( */}
                 <button
-                className='flex items-center gap-1.5 text-[13px] font-medium text-sky-500 bg-sky-50 px-4 py-0.5 rounded-full hover:bg-sky-500 hover:text-white cursor-pointer absolute top-0 right-0'
-                disabled={loading}
-                onClick={generateRely}
-                >
-                    {loading ? (
-                        <LuLoaderCircle className='animate-spin text-[15px]'/>
-                    ):(
-                        <LuWandSparkles className='text-[15px]'/>
-                    )}{" "}
-                    {loading ? "Generating...": "Generate Reply"}
+                        className="
+                            flex items-center gap-1.5 
+                            text-xs sm:text-sm md:text-[13px] font-medium
+                            text-sky-500 bg-sky-50 
+                            px-2 py-1 sm:px-3 md:px-4 
+                            rounded-full 
+                            hover:bg-sky-500 hover:text-white 
+                            disabled:opacity-50 disabled:cursor-not-allowed 
+                            cursor-pointer 
+                            absolute sm:static top-0 right-0
+                        "
+                        disabled={loading}
+                        onClick={generateReply}
+                        >
+                        {loading ? (
+                            <LuLoaderCircle className="animate-spin text-sm sm:text-base" />
+                        ) : (
+                            <LuWandSparkles className="text-sm sm:text-base" />
+                        )}
+                        <span className="hidden sm:inline">{loading ? "Generating..." : "Generate Reply"}</span>
                 </button>
-            )}
+            {/* )} */}
         </div>
     </div>
   )

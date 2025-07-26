@@ -16,7 +16,7 @@ export default function CommentInfoCard({commentId, authorName, authorPhoto, con
     const [replyText, setReplyText] = useState("");
 
         const [showReplyForm, setShowReplyForm]= useState(false);
-        cont [showSubReplies, setShowSubReplies] = useState(false);
+        const [showSubReplies, setShowSubReplies] = useState(false);
 
         //Handles canceling a reply
         const handleCancelReply = ()=>{
@@ -90,7 +90,9 @@ export default function CommentInfoCard({commentId, authorName, authorPhoto, con
                                 }
                                 >
                                     {replies?.length || 0}{" "}
+                                    <span className="hidden sm:inline">
                                     {replies?.length == 1 ? "reply":"replies"}{" "}
+                                    </span>
                                     <LuChevronDown
                                     className={`${showSubReplies ? "rotate-180": ""}`}
                                     />

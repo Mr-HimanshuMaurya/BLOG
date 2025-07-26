@@ -3,9 +3,8 @@ import { UserContex } from '../../../context/userContext'
 import axiosInstance from '../../../utils/axiosInstance';
 import { API_PATHS } from '../../../utils/apiPaths';
 import toast from 'react-hot-toast';
-import { LuChevronDown, LuReply } from 'react-icons/lu';
+import { LuChevronDown, LuReply, LuDot } from 'react-icons/lu'; // Added LuDot
 import CommentReplyInput from '../../../components/Inputs/CommentReplyInput';
-import { comment } from '@uiw/react-md-editor';
 import moment from 'moment';
 
 export default function CommentInfoCard({
@@ -17,7 +16,8 @@ export default function CommentInfoCard({
     post,
     replies,
     getAllComments,
-    onDelete
+    onDelete,
+    isSubReply
 }) {
 
     const {user, setOpenAuthForm} = useContext(UserContex);
@@ -54,34 +54,34 @@ export default function CommentInfoCard({
   };
 
   return (
-    <div className=''>
-        <div className=''>
-            <div className=''>
-                <div className=''>
+    <div className='bg-white p-3 rounded-lg cursor-pointer group mb-5'>
+        <div className='grid grid-cols-12 gap-3'>
+            <div className='col-span-12 md:col-span-8 order-2 md:order-1'>
+                <div className='flex items-start gap-3'>
                     <img
                     src={authorPhoto}
                     alt={authorName}
-                    className=''
+                    className='w-10 h-10 rounded-full'
                     />
 
-                    <div className=''>
-                        <div className=''>
-                            <h3 className=''>
+                    <div className='flex-1'>
+                        <div className='flex items-center gap-1'>
+                            <h3 className='text-[12px] text-gray-500 font-medium'>
                                 @{authorName}
                             </h3>
-                            <LuDot className=""/>
-                            <span className=''>
+                            <LuDot className="text-gray-500"/>
+                            <span className='text-[12px] text-gray-500 font-medium'>
                                 {updatedOn}
                             </span>
                         </div>
 
-                        <p className=''>{content}</p>
+                        <p className='text-sm text-black font-medium'>{content}</p>
 
-                        <div className=''>
+                        <div className='flex items-center gap-3 mt-1.5'>
                             {!isSubReply && (
                                 <>
                                 <button 
-                                className=''
+                                className='flex items-center gap-2 text-[13px] font-medium text-sky-600 bg-sky-50 px-4 py-0.5 rounded-full hover:bg-sky-500 hover:text-white cursor-pointer'
                                 onClick={()=>{
                                     if(!user){
                                         console.log("USER", user);
@@ -95,7 +95,7 @@ export default function CommentInfoCard({
                                 </button>
 
                                 <button 
-                                className=''
+                                className='flex items-center gap-1.5 text-[13px] font-medium text-sky-600 bg-sky-50 px-4 py-0.5 rounded-full hover:bg-sky-500 hover:text-white cursor-pointer'
                                 onClick={()=> 
                                     setShowSubReplies((prevState)=> !prevState)
                                 }
@@ -131,6 +131,7 @@ export default function CommentInfoCard({
         replies.map((comment, index)=>(
             <div key={comment._id} className={`ml-5 ${index == 0 ? "mt-5": ""}`}>
                 <CommentInfoCard
+                commentId={comment._id}
                 authorName={comment.author.name}
                 authorPhoto={comment.author.profileImageUrl}
                 content={comment.content}

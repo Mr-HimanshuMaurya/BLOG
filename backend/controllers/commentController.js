@@ -35,41 +35,38 @@ const addComment = async(req, res)=>{
 //@desc Get all comments
 //@route GET /api/comments
 //@access Public
-const getAllComments = async(req,res)=>{
-    try{
-        //Fetch all comments with author populated
-        const comments =await Comment.find()
-        .populate("author", "name profileImageUrl")
-        .populate("posts", "title coverImageUrl")
-        .sort({createdAt:1}) // opitional, so replies come in order
+const getAllComments = async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .populate("author", "name profileImageUrl")
+      .populate("post", "title coverImageUrl") // fixed here
+      .sort({ createdAt: 1 });
 
-        //Create a map for commentId -> comment object
-        const commentMap = {};
-            comments.forEach(comment=>{
-                comment = comment.toObject();//convert from Mongoose Document to plain object
-                comment.replies = []; //initialize replies array
-                commentMap[comment._id] = comment;
-            });
+    const commentMap = {};
+    comments.forEach(comment => {
+      comment = comment.toObject();
+      comment.replies = [];
+      commentMap[comment._id] = comment;
+    });
 
-            //Nest replies under their parentComment
-            const nestedComments = [];
-            comments.forEach(comment =>{
-                if(comment.parentComment){
-                    const parent = commentMap[comment.parentComment];
-                    if(parent){
-                        parent.replies.push(commentMap[comment._id]);
-                    }
-                }else{
-                    nestedComments.push(commentMap[comment._id]);
-                }
-            });
-            res.json(nestedComments);
-    }catch(error){
-        res
-        .status(500)
-        .json({message:"Failed to fetch all comment", error: error.message});
-    }
+    const nestedComments = [];
+    comments.forEach(comment => {
+      if (comment.parentComment) {
+        const parent = commentMap[comment.parentComment];
+        if (parent) {
+          parent.replies.push(commentMap[comment._id]);
+        }
+      } else {
+        nestedComments.push(commentMap[comment._id]);
+      }
+    });
+
+    res.json(nestedComments);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch all comment", error: error.message });
+  }
 };
+
 
 //@desc Get all comments for a blog post
 //@route Get /api/comments/:postId

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import DashboardLayout from '../../components/Layouts/DashboardLayout'
-import { data, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import moment from 'moment';
 import CommentInfoCard from '../../components/Cards/CommentInfoCard';
 import axiosInstance from '../../utils/axiosInstance';
@@ -9,88 +9,86 @@ import toast from 'react-hot-toast';
 import Modal from '../../components/Modal';
 import DeleteAlertContent from '../../components/DeleteAlertContent';
 
-
 export default function Comments() {
   const navigate = useNavigate();
   const [comments, setComments] = useState([]);
 
   const [openDeleteAlert, setOpenDeleteAlert] = useState({
-    open:false,
-    data:null,
+    open: false,
+    data: null,
   });
 
-  //get all comments
-  const getAllComments = async()=>{
-    try{
+  // Get all comments
+  const getAllComments = async () => {
+    try {
       const response = await axiosInstance.get(API_PATHS.COMMENTS.GET_ALL);
-      setComments(response.data?.length> 0 ? response.data : []);
-    }catch(error){
-      console.error("Error fetchng data", error);
+      setComments(response.data?.length > 0 ? response.data : []);
+    } catch (error) {
+      console.error("Error fetching data", error);
     }
   };
 
-  //delete comment
-  const deleteComment= async (commentId)=>{
-    try{
+  // Delete comment
+  const deleteComment = async (commentId) => {
+    try {
       await axiosInstance.delete(API_PATHS.COMMENTS.DELETE(commentId));
-
-      toast.success("Comment Deleted Sucessfully");
+      toast.success("Comment Deleted Successfully");
       setOpenDeleteAlert({
-        open:false,
-        data:null,
+        open: false,
+        data: null,
       });
       getAllComments();
-    }catch(error){
-      console.error("Error deleting blog post", error);
+    } catch (error) {
+      console.error("Error deleting comment", error);
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     getAllComments();
-    return()=>{};
+    return () => {};
   }, []);
 
   return (
     <DashboardLayout activeMenu="Comments">
-      <div className='w-auto sm:max-w-[900px] max-auo'>
+      <div className='w-auto sm:max-w-[900px] max-auto'>
         <h2 className='text-2xl font-semibold mt-5 mb-5'>Comments</h2>
 
-        {comments.map((comment)=>(
+        {comments.map((comment) => (
           <CommentInfoCard
-          key={comment._id}
-          commentId={comment.id || null}
-          authorName={comment.author.name}
-          authorPhoto={comment.author.profileImageUrl}
-          content={comment.content}
-          updatedOn={
-            comment.updatedAt
-            ? moment(comment.updatedAt).format("Do MMM YYYY")
-            : "-"
-          }
-          post={comment.post}
-          replies={comment.replies || []}
-          getAllComments={getAllComments}
-          onDelete={(commentId)=> 
-            setOpenDeleteAlert({open: true, data:commentId || comment._id})
-          }
+            key={comment._id}
+            commentId={comment._id || null}  // FIXED
+            authorName={comment.author.name}
+            authorPhoto={comment.author.profileImageUrl}
+            content={comment.content}
+            updatedOn={
+              comment.updatedAt
+                ? moment(comment.updatedAt).format("Do MMM YYYY")
+                : "-"
+            }
+            post={comment.post}
+            replies={comment.replies || []}
+            getAllComments={getAllComments}
+            onDelete={(commentId) =>
+              setOpenDeleteAlert({ open: true, data: commentId || comment._id })
+            }
           />
         ))}
       </div>
 
-      <Modal 
-      isOpen={openDeleteAlert?.open}
-      onClose={()=>{
-        setOpenDeleteAlert({open: false, data:null})
-      }}
-      title="Delete Alert"
+      <Modal
+        isOpen={openDeleteAlert?.open}
+        onClose={() => {
+          setOpenDeleteAlert({ open: false, data: null })
+        }}
+        title="Delete Alert"
       >
         <div className='w-[30vw]'>
           <DeleteAlertContent
-          content="Are you sure want to delete this comment?"
-          onDelete={()=> deleteComment(openDeleteAlert.data)}
+            content="Are you sure want to delete this comment?"
+            onDelete={() => deleteComment(openDeleteAlert.data)}
           />
         </div>
       </Modal>
     </DashboardLayout>
-  )
+  );
 }

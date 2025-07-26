@@ -5,6 +5,10 @@ import{
     LuLayoutTemplate,
     LuTag
 } from "react-icons/lu";
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import SchoolIcon from '@mui/icons-material/School';
+import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 export const SIDE_MENU_DATA = [
     {
@@ -32,19 +36,31 @@ export const BLOG_NAVBAR_DATA = [
     {
         id:"01",
         label:"Home",
-        icon: LuLayoutTemplate,
+        icon: DashboardIcon,
         path: "/",
     },
     {
         id:"02",
-        label:"React JS",
-        icon: LuTag,
-        path: "/tag/React",
+        label:"Technology",
+        icon: PrecisionManufacturingIcon,
+        path: "/tag/Technology",
     },
     {
         id:"03",
-        label:"Next JS",
-        icon: LuTag,
-        path: "/tag/Next.js",
-    }
+        label:"Education",
+        icon: SchoolIcon,
+        path: "/tag/Education",
+    },
+    {
+        id:"04",
+        label:"AI Tech",
+        icon:AutoAwesomeIcon,
+        path:"/tag/AI"
+    },
+    {
+        id:"05",
+        label:"Blog Posts",
+        icon: LuGalleryVerticalEnd,
+        path: "/user/posts",
+    },
 ]

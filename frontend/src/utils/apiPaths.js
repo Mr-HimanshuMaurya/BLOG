@@ -29,7 +29,7 @@ export const API_PATHS = {
         GET_BY_SLUG:(slug)=>`/api/posts/slug/${slug}`, //Get a single blog post by slug
         UPDATE:(id)=> `/api/posts/${id}`, //Update a blog post
         DELETE:(id)=> `/api/posts/${id}`, //Delete a blog post
-        GET_BY_TAG:(tag)=> `/api/posts.tag/${tag}`,//Get posts by a specific tag
+        GET_BY_TAG:(tag)=> `/api/posts/tag/${tag}`,//Get posts by a specific tag
         SEARCH: "/api/posts/search", //Search posts by title or content
         INCREMENT_VIEW:(id)=> `/api/posts/${id}/view`, //Increament view count
         LIKE: (id) => `/api/posts/${id}/like`,//Like a blog post
