@@ -16,6 +16,7 @@ export default function SignUp({setCurrentPage}) {
   const[email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [adminAccessToken, setAdminAccessToken] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const [error, setError]= useState(null);
 
@@ -47,6 +48,7 @@ export default function SignUp({setCurrentPage}) {
 
     //Signup API Call
     try{
+      setLoading(true);
       //Upload image if present
       if(profilePic){
         const imgUploadRes = await uploadImage(profilePic);
@@ -65,6 +67,7 @@ export default function SignUp({setCurrentPage}) {
       if(token){
         localStorage.setItem("token", token);
         updateUser(response.data);
+        setLoading(false)
 
         //Redirect based on role
         if (role === "admin") {
@@ -81,6 +84,7 @@ export default function SignUp({setCurrentPage}) {
       }else{
         setError("Something went wrong. Please try again")
       }
+      setLoading(false);
     }
 
   }
@@ -131,26 +135,26 @@ export default function SignUp({setCurrentPage}) {
 
           {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
-          <button type="submit" className="btn-primary">
-            SIGN UP
+          <button type="submit" className="btn-primary" disabled={loading}>
+           {loading ? "Logging in..." : "SIGN UP"}
           </button>
 
           <p className="text-[13px] text-slate-800 mt-3">
-            Already an account?
+            Already an account? 
             <button
             className="font-medium text-primary underline cursor-pointer"
             onClick={()=>{
               setCurrentPage("login")
             }}
             >
-              Login
+              
             </button>
           </p>
         </form>
       </div>
 
       <div className="hidden md:block">
-        <img src={AUTH_IMG} alt="Login" className="h-[400px] w-[400px]"/>
+        <img src={AUTH_IMG} alt="" className="h-[400px] w-[400px]"/>
       </div>
     </div>
   )

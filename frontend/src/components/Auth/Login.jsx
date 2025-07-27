@@ -13,6 +13,7 @@ export default function Login({setCurrentPage}) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false)
 
     const {updateUser, setOpenAuthForm} = useContext(UserContex);
     const navigate = useNavigate();
@@ -35,6 +36,10 @@ export default function Login({setCurrentPage}) {
 
         //Logiin API Call
         try{
+
+            setLoading(true)
+
+
             const response = await axiosInstance.post(API_PATHS.AUTH.LOGIN, {
                 email,
                 password,
@@ -45,7 +50,7 @@ export default function Login({setCurrentPage}) {
             if(token){
                 localStorage.setItem("token", token);
                 updateUser(response.data);
-
+                setLoading(false);
                 //Redirect based on role
                 if(role === "admin"){
                     setOpenAuthForm(false)
@@ -59,6 +64,7 @@ export default function Login({setCurrentPage}) {
             }else{
                 setError("Something went wrong. Please try again");
             }
+            setLoading(false)
         }
 
     };
@@ -92,8 +98,8 @@ export default function Login({setCurrentPage}) {
                 
                 {error && <p className="text-red-500 text-xs pb-2.5">{error}</p>}
 
-                <button type="submit" className="btn-primary ">
-                    LOGIN
+                <button type="submit" className="btn-primary " disabled={loading}>
+                    {loading ? "Logging in..." : "LOGIN"}
                 </button>
 
                 <p className="text-[13px] text-slate-800 mt-3">
