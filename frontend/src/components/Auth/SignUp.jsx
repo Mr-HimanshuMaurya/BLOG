@@ -147,7 +147,7 @@ export default function SignUp({setCurrentPage}) {
               setCurrentPage("login")
             }}
             >
-              
+              Login
             </button>
           </p>
         </form>
