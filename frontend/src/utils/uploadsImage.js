@@ -1,5 +1,4 @@
-import { API_PATHS } from "./apiPaths";
-import axiosInstance from "./axiosInstance";
+import axios from "axios";
 
 const uploadImage = async (imageFile) =>{
     const formData = new FormData();
@@ -7,11 +6,9 @@ const uploadImage = async (imageFile) =>{
     formData.append('image', imageFile);
 
     try{
-        const response = await axiosInstance.post(API_PATHS.IMAGE.UPLOAD_IMAGE, formData, {
-            headers:{
-                'Content-Type': 'multipart/form-data', //Set header for file upload
-            },
-        });
+        const res = await axios.post("http://localhost:8000/api/auth/upload-image", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
         return response.data; //return response data
     }catch(error){
         console.error('Error uploading the image:', error);
