@@ -1,4 +1,6 @@
-export const BASE_URL = "http://localhost:8000";
+import server from "../environment";
+
+export const BASE_URL = server;
 
 export const API_PATHS = {
     AUTH: {
