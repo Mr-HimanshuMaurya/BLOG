@@ -2,14 +2,11 @@ import{
     LuLayoutDashboard,
     LuGalleryVerticalEnd,
     LuMessageSquareQuote,
-    LuLayoutTemplate,
-    LuTag
 } from "react-icons/lu";
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SchoolIcon from '@mui/icons-material/School';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import AddIcon from '@mui/icons-material/Add';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export const SIDE_MENU_DATA = [
@@ -64,5 +61,6 @@ export const BLOG_NAVBAR_DATA = [
         label:"Create Post",
         icon: AddCircleOutlineIcon,
         path: "/user/create",
+        requiresAuth: true
     },
 ]

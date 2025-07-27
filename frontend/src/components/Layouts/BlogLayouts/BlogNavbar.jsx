@@ -41,8 +41,10 @@ export default function BlogNavBar({ activeMenu }) {
         </div>
 
         <nav className='hidden md:flex items-center gap-10'>
-          {BLOG_NAVBAR_DATA.map((item) => {
-            if (item?.onlySideMenu) return null;
+          {BLOG_NAVBAR_DATA
+            .filter(item => !item.requiresAuth || user) // hide if requiresAuth and no user
+            .map((item) => {
+              if (item?.onlySideMenu) return null;
 
             const isActive = location.pathname === item.path ||
               (item.path.startsWith("/tag/") && location.pathname.startsWith(item.path));
