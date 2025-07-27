@@ -36,7 +36,7 @@ export default function BlogNavBar({ activeMenu }) {
           </button>
 
           <Link to="/">
-            <img src={Logo} alt='logo' className='h-[24px] md:h-[26px]' />
+            <img src={Logo} alt='logo' className='h-[16px] md:h-[20px]' />
           </Link>
         </div>
 

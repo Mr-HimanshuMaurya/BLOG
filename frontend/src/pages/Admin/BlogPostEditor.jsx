@@ -61,7 +61,7 @@ export default function BlogPostEditor({isEdit}) {
         const aiResponse = await axiosInstance.post(
           API_PATHS.AI.GENERATE_BLOG_POST_IDEAS,
           {
-            topics: "Technology, Education, Skills, News, Environment, Coding",
+            topics: "Technology, Startup, Education, Skills, News, Environment, Coding, Money",
           }
         );
         const generatedIdeas = aiResponse.data;
