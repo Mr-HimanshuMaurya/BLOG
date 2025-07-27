@@ -9,6 +9,8 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SchoolIcon from '@mui/icons-material/School';
 import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturing';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import AddIcon from '@mui/icons-material/Add';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 export const SIDE_MENU_DATA = [
     {
@@ -59,8 +61,8 @@ export const BLOG_NAVBAR_DATA = [
     },
     {
         id:"05",
-        label:"Blog Posts",
-        icon: LuGalleryVerticalEnd,
-        path: "/user/posts",
+        label:"Create Post",
+        icon: AddCircleOutlineIcon,
+        path: "/user/create",
     },
 ]

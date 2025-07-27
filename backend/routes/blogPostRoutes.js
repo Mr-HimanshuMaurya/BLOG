@@ -28,7 +28,7 @@ router.get("/tag/:tag", getPostByTag); // must come before /slug/:slug
 router.get("/search", searchPosts);
 router.get("/trending", getTopPosts);
 
-router.post("/", protect, adminOnly, createPost);
+router.post("/", protect, createPost);
 router.get("/", getAllPosts);
 
 router.get("/slug/:slug", getPostBySlug); // placed after /tag and /search
